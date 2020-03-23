@@ -156,12 +156,42 @@ void testSubtree() {
     assert(sbt2.search(800));
     assert(!sbt2.search(75));
     assert(!sbt1.search(800));
-    //assert(sbt2.get_size() == 3);
+    assert(sbt2.get_size() == 3);
     cout << sbt2.get_size() << " OK!" << endl;
+    cout << "Printing a tree..." << endl << sbt1;
+    cout << "Printing the subtree..." << endl << sbt2;
+}
+
+void testIterators() {
+    cout << "Testing iterators...";
+    search_binary_tree<uint, greater_than> sbt1;
+    sbt1.insert(42);
+    sbt1.insert(10);
+    sbt1.insert(100);
+    sbt1.insert(80);
+    sbt1.insert(200);
+    sbt1.insert(5);
+    sbt1.insert(250);
+    sbt1.insert(300);
+    sbt1.insert(120);
+    sbt1.insert(90);
+    sbt1.insert(85);
+    sbt1.insert(70);
+    sbt1.insert(75);
+    sbt1.insert(400);
+    search_binary_tree<uint, greater_than>::const_iterator it, ite;
+    it = sbt1.begin();
+    ite = sbt1.end();
+    while (it != ite) {
+        cout << it.operator*().value << " ";
+        it++;
+    }
+    cout << endl;
 }
 
 int main() {
   testDefaultMethods();
   testInserionSearch();
   testSubtree();
+  testIterators();
 }

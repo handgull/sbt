@@ -74,6 +74,20 @@ private:
         }
         return 0;
     }
+    
+    /**
+    @brief count
+    
+    Calcola ricorsivamente la dimensione dell'albero
+    @param n nodo di partenza
+    @return la dimensione dell'albero
+    **/
+    uint count(const node<T> *n) {
+        if (n == 0) {
+            return 0;
+        }
+        return count(n->left) + count(n->right) + 1;
+    }
 
 public:
     /**
@@ -178,6 +192,7 @@ public:
         if (head != 0) {
             st._root = copy_tree(head);
         }
+        st._size = st.count(st._root);
         return st;
     }
 
@@ -196,6 +211,112 @@ public:
         }
         return *this;
     }
+
+
+    class const_iterator {
+    private:
+        const node<T> **_array;
+        uint _len;
+
+        // La classe container deve essere messa friend dell'iteratore per poter
+        // usare il costruttore di inizializzazione.
+        friend class search_binary_tree;
+
+        // Costruttore privato di inizializzazione usato dalla classe container
+        // tipicamente nei metodi begin e end
+        explicit const_iterator(const node<T> *h) : _len(1) {
+            _array[0] = h;
+        }
+
+    public:
+        typedef std::forward_iterator_tag iterator_category;
+        typedef node<T> value_type;
+        typedef ptrdiff_t difference_type;
+        typedef const node<T> *pointer;
+        typedef const node<T> &reference;
+
+        const_iterator() : _array(0), _len(0) {}
+
+        const_iterator(const const_iterator &other) : _array(other._array), _len(other._len) {}
+
+        const_iterator &operator=(const const_iterator &other) {
+            if (this != &other) {
+                _array = other._array;
+                _len = other._len;
+            }
+            return *this;
+        }
+
+        ~const_iterator() {}
+
+        // Ritorna il dato riferito dall'iteratore (dereferenziamento)
+        reference operator*() const {
+            return *_array[_len - 1];
+        }
+
+        // Ritorna il puntatore al dato riferito dall'iteratore
+        pointer operator->() const {
+            return _array[_len - 1];
+        }
+
+        // Operatore di iterazione post-incremento
+        const_iterator operator++(int) {
+            const_iterator tmp(*this);
+            if (_len != 0) {
+                node<T> *l = _array[_len - 1]->left;
+                node<T> *r = _array[_len - 1]->right;
+                _len--;
+                if (l != 0) {
+                    _array[_len] = l;
+                    _len++;
+                }
+                if (r != 0) {
+                    _array[_len] = r;
+                    _len++;
+                }
+            }
+            return tmp;
+        }
+
+        // Operatore di iterazione pre-incremento
+        const_iterator &operator++() {
+            if (_len != 0) {
+                node<T> *l = _array[_len - 1]->left;
+                node<T> *r = _array[_len - 1]->right;
+                _len--;
+                if (l != 0) {
+                    _array[_len] = l;
+                    _len++;
+                }
+                if (r != 0) {
+                    _array[_len] = r;
+                    _len++;
+                }
+            }
+            return *this;
+        }
+
+        // Uguaglianza
+        bool operator==(const const_iterator &other) const {
+            return this->_array[_len - 1] == other._array[other._len - 1];
+        }
+
+        // Diversita'
+        bool operator!=(const const_iterator &other) const {
+            return this->_array[_len - 1] != other._array[other._len - 1];
+        }
+    };
+
+    // Ritorna l'iteratore all'inizio della sequenza dati
+    const_iterator begin() const {
+        return const_iterator(_root);
+    }
+
+    // Ritorna l'iteratore alla fine della sequenza dati
+    const_iterator end() const {
+        return const_iterator();
+    }
+
 };
 
 /**
@@ -207,12 +328,16 @@ di output il contenuto dell'albero.
 @param sbt (search_binary_tree da utilizzare)
 @return Il riferimento allo stream di output
 **/
-/**
 template <typename T, typename F>
 std::ostream &operator<<(std::ostream &os, const search_binary_tree<T,F> &sbt) {
-    os << sbt.get_size();
-  return os;
+    typename search_binary_tree<T, F>::const_iterator it, ite;
+    it = sbt.begin();
+    ite = sbt.end();
+    while (it != ite) {
+        os << it.operator*().value;
+        it++;
+    }
+    return os;
 }
-**/
 
 #endif
