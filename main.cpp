@@ -28,12 +28,35 @@ void testDefaultMethods() {
     cout << "  checking the size...";
     assert(sbt1.get_size() == 0);
     cout << sbt1.get_size() << " OK!"<< endl;
-    
+
     cout << "Testing root constructor..." << endl;
     search_binary_tree<uint, greater_than> sbt2(42);
     cout << "  checking the size...";
     assert(sbt2.get_size() == 1);
     cout << sbt2.get_size() << " OK!" << endl;
+
+    cout << "Testing operator=...";
+    sbt2.insert(69);
+    sbt2.insert(666);
+    search_binary_tree<uint, greater_than> sbt3 = sbt2;
+    sbt3.insert(420);
+    assert(sbt2.get_size() == 3 && sbt3.get_size() == 4);
+    assert(sbt3.search(42));
+    assert(sbt3.search(69));
+    assert(sbt3.search(666));
+    assert(sbt3.search(420));
+    assert(!sbt2.search(420));
+    search_binary_tree<uint, greater_than> sbt4;
+    sbt4.insert(1);
+    sbt4.insert(2);
+    sbt4.insert(3);
+    sbt4 = sbt2;
+    assert(!sbt4.search(1) && !sbt4.search(2) && !sbt4.search(3));
+    assert(sbt4.search(42));
+    assert(sbt4.search(69));
+    assert(sbt4.search(666));
+    assert(sbt4.get_size() == 3);
+    cout << " OK!" << endl;
 
     cout << "Testing copy constructor..." << endl;
     sbt1.insert(42);
@@ -46,17 +69,15 @@ void testDefaultMethods() {
     sbt1.insert(300);
     sbt1.insert(120);
     sbt1.insert(90);
-    search_binary_tree<uint, greater_than> sbt3(sbt1);
-    /*
+    search_binary_tree<uint, greater_than> sbt5(sbt1);
     cout << "  checking the size...";
-    assert(sbt3.get_size() == 10);
-    cout << sbt3.get_size() << " OK!" << endl;
-    /*
+    assert(sbt5.get_size() == 10);
+    cout << sbt5.get_size() << " OK!" << endl;
+
     cout << "  checking the size after an insertion in the old tree...";
     sbt1.insert(85);
-    assert(sbt3.get_size() == 10);
-    cout << sbt3.get_size() << " OK!" << endl;
-    */
+    assert(sbt5.get_size() == 10);
+    cout << sbt5.get_size() << " OK!" << endl;
 }
 
 void testInserionSearch() {
@@ -78,7 +99,7 @@ void testInserionSearch() {
     sbt1.insert(400);
     cout << "  checking the size...";
     assert(sbt1.get_size() == 14);
-    cout << sbt1.get_size() << " OK!" <<endl;
+    cout << sbt1.get_size() << " OK!" << endl;
 
     cout << "  checking the size after equal value insertion...";
     int duplicates = 0;
@@ -99,24 +120,48 @@ void testInserionSearch() {
         duplicates++;
     }
     assert(sbt1.get_size() == 15 && duplicates == 3);
-    cout << sbt1.get_size() << " with " << duplicates << " duplicates. OK!" <<endl;
+    cout << sbt1.get_size() << " with " << duplicates << " duplicates. OK!" << endl;
     
     cout << "Testing search method on all the inserted values...";
     assert(sbt1.search(5) && sbt1.search(10) && sbt1.search(42) && sbt1.search(70) && sbt1.search(75));
     assert(sbt1.search(80) && sbt1.search(85) && sbt1.search(90) && sbt1.search(100) && sbt1.search(120));
     assert(sbt1.search(200) && sbt1.search(250) && sbt1.search(300) && sbt1.search(400) && sbt1.search(50));
-    cout << " OK!" <<endl;
+    cout << " OK!" << endl;
     
     cout << "Testing search method on some random values...";
     assert(!sbt1.search(420) && !sbt1.search(666) && !sbt1.search(69));
-    cout << " OK!" <<endl;
+    cout << " OK!" << endl;
 }
 
 void testSubtree() {
-    
+    cout << "Testing subtree method...";
+    search_binary_tree<uint, greater_than> sbt1;
+    sbt1.insert(42);
+    sbt1.insert(10);
+    sbt1.insert(100);
+    sbt1.insert(80);
+    sbt1.insert(200);
+    sbt1.insert(5);
+    sbt1.insert(250);
+    sbt1.insert(300);
+    sbt1.insert(120);
+    sbt1.insert(90);
+    sbt1.insert(85);
+    sbt1.insert(70);
+    sbt1.insert(75);
+    sbt1.insert(400);
+    search_binary_tree<uint, greater_than> sbt2 = sbt1.subtree(90);
+    sbt2.insert(800);
+    assert(sbt2.search(85));
+    assert(sbt2.search(800));
+    assert(!sbt2.search(75));
+    assert(!sbt1.search(800));
+    //assert(sbt2.get_size() == 3);
+    cout << sbt2.get_size() << " OK!" << endl;
 }
 
 int main() {
   testDefaultMethods();
   testInserionSearch();
+  testSubtree();
 }

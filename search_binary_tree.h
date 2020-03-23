@@ -49,10 +49,11 @@ private:
     @brief copy_tree
 
     Metodo privato che copia la struttura di un albero data la sua radice
+    NOTA: il tipo template è messo per rendere la funzione più "intelligente" ma in questa implementazione non è necessario essendo che lavoro sempre su SBT con tipo T
     @return puntatore a root dell'albero copia
     **/
     template<typename Q>
-    node<T> *copy_tree(node<Q> *head) {
+    node<T> *copy_tree(node<Q> *head) const {
         return head == 0 ? 0 : new node<T>(static_cast<T>(head->value), copy_tree(head->left), copy_tree(head->right));
     }
     
@@ -98,8 +99,7 @@ public:
     copiati da un altro search_binary_tree.
     @param other (un altro search_binary_tree, da usare per creare la copia)
     **/
-    template<typename Q, typename C>
-    search_binary_tree(const search_binary_tree<Q, C> &other) : _size(other._size) {
+    search_binary_tree(const search_binary_tree &other) : _size(other._size) {
         try {
             _root = copy_tree(other._root);
         } catch(...) {
@@ -173,11 +173,28 @@ public:
     @return il subtree, se il valore d non era presente ritorno un albero vuoto
     **/
     search_binary_tree subtree(const T &d) const {
-        search_binary_tree st = new search_binary_tree;
+        search_binary_tree<T, F> st;
         node<T> *head = find_node(d);
         if (head != 0) {
             st._root = copy_tree(head);
         }
+        return st;
+    }
+
+    /**
+    @brief operator=
+
+    Operatore di assegnamento che permette la copia tra SBT.
+    @param other (l'oggetto da cui copiare)
+    @return puntatore all'oggetto che lancia il metodo.
+    **/
+    search_binary_tree &operator=(const search_binary_tree &other) {
+        if (this != &other) {
+            this->clear();
+            this->_root = copy_tree(other._root);
+            this->_size = other._size;
+        }
+        return *this;
     }
 };
 
