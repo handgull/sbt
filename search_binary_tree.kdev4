@@ -1,3 +1,4 @@
 [Project]
+CreatedFrom=Makefile
+Manager=KDevCustomMakeManager
 Name=search_binary_tree
-Manager=KDevGenericManager
